@@ -30,7 +30,59 @@ pyportal = PyPortal(status_neopixel=board.NEOPIXEL,
 refresh_time = None
 display = board.DISPLAY
 
-def do_display(tens, ones, little_tens, little_ones):
+
+def split_digits(value):
+    digit_list = []
+    if value >= 100:
+        digit_list.append(int(value / 100))
+        value %= 100
+    digit_list.append(int(value / 10))
+    value %= 10
+    digit_list.append(value)
+    return digit_list
+
+
+def make_large_goup(large_number):
+    digit_list = split_digits(large_number)
+    # Position for 320x240 screen
+    if len(digit_list) > 2:
+        x_offset = 25
+    else:
+        x_offset = 70
+    group = displayio.Group(x = 0, y = 0)
+
+    for digit in digit_list:
+        f = open("/bmp/digits-large-%d.bmp" % digit, "rb")
+        digit_group = displayio.Group(x=x_offset, y=50)
+        odb = displayio.OnDiskBitmap(f)
+        digit_tile = displayio.TileGrid(odb, pixel_shader=displayio.ColorConverter())
+        digit_group.append(digit_tile)
+        group.append(digit_group)
+        x_offset += 90
+    return group
+
+
+def make_small_goup(small_number):
+    digit_list = split_digits(small_number)
+    # Position for 320x240 screen
+    if len(digit_list) > 2:
+        x_offset = 229
+    else:
+        x_offset = 259
+    group = displayio.Group(x = 0, y = 0)
+
+    for digit in digit_list:
+        f = open("/bmp/digits-small-%d.bmp" % digit, "rb")
+        digit_group = displayio.Group(x=x_offset, y=194)
+        odb = displayio.OnDiskBitmap(f)
+        digit_tile = displayio.TileGrid(odb, pixel_shader=displayio.ColorConverter())
+        digit_group.append(digit_tile)
+        group.append(digit_group)
+        x_offset += 30
+    return group
+
+
+def do_display(large_number, small_number):
     everything_group = displayio.Group(x = 0, y = 0)
 
     f_header = open("/bmp/header.bmp", "rb")
@@ -40,47 +92,35 @@ def do_display(tens, ones, little_tens, little_ones):
     header_group.append(header)
     everything_group.append(header_group)
 
-    large_group = displayio.Group(x = 0, y = 0)
-    f_tens = open("/bmp/digits-large-%d.bmp" % tens, "rb")
-    tens_group = displayio.Group(x = 70, y = 50)
-    odb = displayio.OnDiskBitmap(f_tens)
-    tens_digit = displayio.TileGrid(odb, pixel_shader=displayio.ColorConverter())
-    tens_group.append(tens_digit)
-    large_group.append(tens_group)
+    everything_group.append(make_large_goup(large_number))
 
-    f_ones = open("/bmp/digits-large-%d.bmp" % ones, "rb")
-    ones_group = displayio.Group(x = 70 + 90, y = 50)
-    odb = displayio.OnDiskBitmap(f_ones)
-    ones_digit = displayio.TileGrid(odb, pixel_shader=displayio.ColorConverter())
-    ones_group.append(ones_digit)
-    large_group.append(ones_group)
-    everything_group.append(large_group)
-
-    small_group = displayio.Group(x = 0, y = 0)
-    f_small_tens = open("/bmp/digits-small-%d.bmp" % little_tens, "rb")
-    small_tens_group = displayio.Group(x = 259, y = 194)
-    odb = displayio.OnDiskBitmap(f_small_tens)
-    small_tens_digit = displayio.TileGrid(odb, pixel_shader=displayio.ColorConverter())
-    small_tens_group.append(small_tens_digit)
-    small_group.append(small_tens_group)
-
-    f_small_ones = open("/bmp/digits-small-%d.bmp" % little_ones, "rb")
-    small_ones_group = displayio.Group(x = 259 + 30, y = 194)
-    odb = displayio.OnDiskBitmap(f_small_ones)
-    small_ones_digit = displayio.TileGrid(odb, pixel_shader=displayio.ColorConverter())
-    small_ones_group.append(small_ones_digit)
-    small_group.append(small_ones_group)
-    everything_group.append(small_group)
+    # small_group = displayio.Group(x = 0, y = 0)
+    # f_small_tens = open("/bmp/digits-small-%d.bmp" % little_tens, "rb")
+    # small_tens_group = displayio.Group(x = 259, y = 194)
+    # odb = displayio.OnDiskBitmap(f_small_tens)
+    # small_tens_digit = displayio.TileGrid(odb, pixel_shader=displayio.ColorConverter())
+    # small_tens_group.append(small_tens_digit)
+    # small_group.append(small_tens_group)
+    #
+    # f_small_ones = open("/bmp/digits-small-%d.bmp" % little_ones, "rb")
+    # small_ones_group = displayio.Group(x = 259 + 30, y = 194)
+    # odb = displayio.OnDiskBitmap(f_small_ones)
+    # small_ones_digit = displayio.TileGrid(odb, pixel_shader=displayio.ColorConverter())
+    # small_ones_group.append(small_ones_digit)
+    # small_group.append(small_ones_group)
+    # everything_group.append(small_group)
+    everything_group.append(make_small_goup(small_number))
 
     board.DISPLAY.show(everything_group)
     board.DISPLAY.refresh(target_frames_per_second=60)
-    f_header.close()
-    f_tens.close()
-    f_ones.close()
-    f_small_tens.close()
-    f_small_ones.close()
+    # f_header.close()
+    # f_tens.close()
+    # f_ones.close()
+    # f_small_tens.close()
+    # f_small_ones.close()
 
-do_display(tens = 0, ones = 0, little_tens = 0, little_ones = 0)
+
+do_display(large_number=0, small_number=0)
 
 while True:
     # only query the online time once per hour (and on first run)
@@ -119,7 +159,7 @@ while True:
     since //= 365
     years_since += since
 
-    do_display(tens = int(days_since / 10), ones = (days_since % 10), little_tens = int((days_since - 4) / 10), little_ones = ((days_since - 4) % 10))
+    do_display(large_number=days_since, small_number=(days_since - 4))
 
     # update every minute
     time.sleep(60)
