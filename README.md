@@ -1,6 +1,6 @@
 # Quarantine Counter
 
-<img src="pic1.jpg" width="650px" />
+<img src="pic.jpg" width="650px" />
 
 ## Essentials
 
