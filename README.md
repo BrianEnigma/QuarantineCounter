@@ -1,6 +1,6 @@
 # Quarantine Counter
 
-<table><tr><td><img src="pic1.jpg" width="320px" /></td><td><img src="pic2.jpg" width="320px" /></td></tr></table>
+<img src="pic1.jpg" width="650px" />
 
 ## Essentials
 
@@ -16,7 +16,7 @@ Feel free to take the code, plug in your own WiFi and Adafruit IO information, a
 
 ## Dual Counters
 
-Perhaps not everyone needs two counters, but in my particular situation, we started informally quarantining, but a few days in I had an appointment with my hair stylist to refresh my purple dye. For various reasons, I decided to stick with that appointment. So technically, that broke quarantine, hence the smaller number in the corner.
+The secondary counter counts days of protest in Portland, Oregon.
 
 ## Assets
 
