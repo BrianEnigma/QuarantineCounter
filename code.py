@@ -94,22 +94,7 @@ def do_display(large_number, small_number):
 
     everything_group.append(make_large_goup(large_number))
 
-    # small_group = displayio.Group(x = 0, y = 0)
-    # f_small_tens = open("/bmp/digits-small-%d.bmp" % little_tens, "rb")
-    # small_tens_group = displayio.Group(x = 259, y = 194)
-    # odb = displayio.OnDiskBitmap(f_small_tens)
-    # small_tens_digit = displayio.TileGrid(odb, pixel_shader=displayio.ColorConverter())
-    # small_tens_group.append(small_tens_digit)
-    # small_group.append(small_tens_group)
-    #
-    # f_small_ones = open("/bmp/digits-small-%d.bmp" % little_ones, "rb")
-    # small_ones_group = displayio.Group(x = 259 + 30, y = 194)
-    # odb = displayio.OnDiskBitmap(f_small_ones)
-    # small_ones_digit = displayio.TileGrid(odb, pixel_shader=displayio.ColorConverter())
-    # small_ones_group.append(small_ones_digit)
-    # small_group.append(small_ones_group)
-    # everything_group.append(small_group)
-    everything_group.append(make_small_goup(small_number))
+    # everything_group.append(make_small_goup(small_number))
 
     board.DISPLAY.show(everything_group)
     board.DISPLAY.refresh(target_frames_per_second=60)
@@ -155,9 +140,10 @@ while True:
     since //= 60
     hours_since = since % 24
     since //= 24
-    days_since = since % 365
-    since //= 365
-    years_since += since
+    days_since = since
+    # days_since = since % 365
+    # since //= 365
+    # years_since += since
 
     do_display(large_number=days_since, small_number=(days_since - 4))
 
